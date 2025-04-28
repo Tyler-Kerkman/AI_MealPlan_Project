@@ -1,23 +1,81 @@
-import logo from './logo.svg';
-import './App.css';
+import CalendarSection from "./components/CalendarSection";
+import Navbar from "./components/Navbar";
+import NutritionSection from "./components/NutritionSection";
+import WorkoutSection from "./components/WorkoutSection";
 
 function App() {
+  const workout_data = {
+    type: 'Chest Focused',
+    exercises: [
+      'Barbell Bench Press',
+      'Dumbell Incline Press',
+      'Chest Fly',
+      'Overhead Tricep Extension',
+      'Tricep Push Down'
+    ]
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div style={{ 
+      display: 'flex', 
+      flexDirection: 'column', 
+      minHeight: '100vh',
+      width: '100%',
+      overflowX: 'hidden'
+    }}>
+      <div style={{ 
+        width: '100%',
+        position: 'sticky',
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 100,
+        backgroundColor: 'white'
+      }}>
+        <Navbar />
+      </div>
+      
+      <div style={{ 
+        display: 'flex', 
+        flex: 1,
+        width: '100%',
+        overflowX: 'hidden'
+      }}>
+        <div style={{ 
+          width: '25%',
+          backgroundColor: '#f3f4f6',
+          padding: '1rem',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '1rem',
+          overflowX: 'hidden'
+        }}>
+          <div style={{
+            padding: '1rem',
+            borderBottom: '1px solid #e5e7eb',
+            border: '1px solid black',
+            overflowX: 'hidden'
+          }}>
+            <NutritionSection />
+          </div>
+          <div style={{
+            padding: '1rem',
+            border: '1px solid black',
+            overflowX: 'hidden'
+          }}>
+            <WorkoutSection workout={workout_data} />
+          </div>
+        </div>
+        
+        <div style={{ 
+          width: '75%',
+          backgroundColor: '#ffffff',
+          padding: '1rem',
+          overflowX: 'hidden'
+        }}>
+          <CalendarSection />
+        </div>
+      </div>
     </div>
   );
 }
