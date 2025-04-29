@@ -1,0 +1,23 @@
+.header-text {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.header-text-dropdown {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  border-radius: 0.25rem;
+  padding: 0.5rem;
+}
+
+.exercise-item {
+  padding: 0.75rem 1rem;
+  background-color: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+  border-radius: 0.375rem;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+}

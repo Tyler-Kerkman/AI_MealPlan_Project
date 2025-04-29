@@ -1,0 +1,123 @@
+.nutrition-container {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+}
+
+.extra-info-container-container {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.card-title {
+  font-size: 1.25rem; /* text-xl */
+  font-weight: 700; /* font-bold */
+  color: #3b82f6;
+  margin: 0;
+  margin-bottom: 1rem;
+}
+
+.main-info-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.main-info-title {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.main-info-value {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.calorie {
+  color: #2563eb;
+}
+
+.remaining {
+  color: #16a34a;
+}
+
+.goal {
+  color: black;
+}
+
+.progress-container {
+  width: 100%;
+  background-color: #e5e7eb; /* gray-200 */
+  border-radius: 9999px; /* rounded-full */
+  height: 0.5rem; /* h-2 */
+  margin-bottom: 1.5rem; /* mb-6 */
+  margin-top: 1.5rem;
+}
+
+.progress-bar {
+  background-color: #2563eb; /* blue-600 */
+  height: 0.5rem; /* h-2 */
+  border-radius: 9999px; /* rounded-full */
+}
+
+.extra-info-card {
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  text-align: center;
+}
+
+.extra-info-label {
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+/* Shared Value Styles */
+.extra-info-value {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0.25rem 0;
+}
+
+/* Shared Goal Styles */
+.extra-info-goal {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.protein-card {
+  background-color: #eff6ff;
+}
+.protein-value {
+  color: #1d4ed8;
+}
+
+.carbs-card {
+  background-color: #fefce8;
+}
+.carbs-value {
+  color: #b45309;
+}
+
+.fat-card {
+  background-color: #fef2f2;
+}
+.fat-value {
+  color: #b91c1c;
+}
+
+.fiber-card {
+  background-color: #f5f3ff;
+}
+.fiber-value {
+  color: #6d28d9;
+}

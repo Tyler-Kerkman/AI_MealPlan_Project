@@ -1,20 +1,30 @@
-import React from 'react'
+import React from "react";
 import { BsCake } from "react-icons/bs";
+import "./MealCard.css";
 
-function Meal( {meal_info}) {
-    return (
-        <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '1rem'
-        }}>
-            <BsCake style={{flexShrink: 0}} />
-            <div>
-                <p>{meal_info.name}</p>
-                <p>{meal_info.extra_info}</p>
-            </div>
-        </div>
-    )
+function Meal({ meal, setShowMealCard, setShowRecipe, setMeal }) {
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "1rem",
+      }}
+    >
+      <div>
+        <p
+          className="meal-item"
+          onClick={() => {
+            setShowMealCard(false);
+            setMeal(meal);
+            setShowRecipe(true);
+          }}
+        >
+          {meal.name}
+        </p>
+      </div>
+    </div>
+  );
 }
 
-export default Meal
+export default Meal;
