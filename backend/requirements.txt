@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+google-genai
+openfoodfacts
+pydantic
+requests
+uvicorn
