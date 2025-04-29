@@ -34,15 +34,22 @@ export default function GenerateMealPlan() {
   };
 
   useEffect(() => {
-    // console.log(value);
-    if (value.length === undefined || value.length === 1) {
-      console.log(`${value.getMonth() + 1}/${value.getDate()}`);
-    } else {
-      for (let i = 0; i < value.length; i++) {
-        console.log(`${value[i].month.number}/${value[i].day}`);
+    if (mealPlan) {
+      if (value instanceof Date) {
+        if (value.getUTCDate() === new Date().getUTCDate()) {
+          localStorage.setItem(
+            `${value.getMonth() + 1}/${value.getDate()}`,
+            JSON.stringify(mealPlan[0])
+          );
+        }
+      } else {
+        localStorage.setItem(
+          `${value[0].month.number}/${value[0].day}`,
+          JSON.stringify(mealPlan[0])
+        );
       }
     }
-  }, [value]);
+  }, [mealPlan]);
 
   return (
     <div
