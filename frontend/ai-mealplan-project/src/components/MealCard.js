@@ -36,60 +36,52 @@ function MealCard({ meals, date, setShowMealCard, setShowRecipe, setMeal }) {
     <div className="meal-card">
       <h1 className="meal-card__title">{formattedDate}'s Meal Plan</h1>
       <p className="meal-card__total-calories">
-        Total Calories: {meals.calories}
+        Total Calories:{" "}
+        {meals[0].calories + meals[1].calories + meals[2].calories}
       </p>
 
       <div className="meal-card__section">
         <h2>Breakfast</h2>
         <p className="meal-card__section-calories">
-          {meals.breakfast.calories} calories
+          {meals[0].calories} calories
         </p>
         <div className="meal-card__meals">
-          {meals.breakfast.meals.map((meal, index) => (
-            <Meal
-              key={index}
-              meal={meal}
-              setShowMealCard={setShowMealCard}
-              setShowRecipe={setShowRecipe}
-              setMeal={setMeal}
-            />
-          ))}
+          <Meal
+            meal={meals[0]}
+            setShowMealCard={setShowMealCard}
+            setShowRecipe={setShowRecipe}
+            setMeal={setMeal}
+          />
         </div>
       </div>
 
       <div className="meal-card__section">
         <h2>Lunch</h2>
         <p className="meal-card__section-calories">
-          {meals.lunch.calories} calories
+          {meals[1].calories} calories
         </p>
         <div className="meal-card__meals">
-          {meals.lunch.meals.map((meal, index) => (
-            <Meal
-              key={index}
-              meal={meal}
-              setShowMealCard={setShowMealCard}
-              setShowRecipe={setShowRecipe}
-              setMeal={setMeal}
-            />
-          ))}
+          <Meal
+            meal={meals[1]}
+            setShowMealCard={setShowMealCard}
+            setShowRecipe={setShowRecipe}
+            setMeal={setMeal}
+          />
         </div>
       </div>
 
       <div className="meal-card__section">
         <h2>Dinner</h2>
         <p className="meal-card__section-calories">
-          {meals.dinner.calories} calories
+          {meals[2].calories} calories
         </p>
         <div className="meal-card__meals">
-          {meals.dinner.meals.map((meal, index) => (
-            <Meal
-              key={index}
-              meal={meal}
-              setShowMealCard={setShowMealCard}
-              setShowRecipe={setShowRecipe}
-              setMeal={setMeal}
-            />
-          ))}
+          <Meal
+            meal={meals[2]}
+            setShowMealCard={setShowMealCard}
+            setShowRecipe={setShowRecipe}
+            setMeal={setMeal}
+          />
         </div>
       </div>
     </div>

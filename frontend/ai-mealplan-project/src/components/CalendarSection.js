@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Calendar from "react-calendar";
 import "./Calendar.css";
 import MealCard from "./MealCard";
@@ -11,69 +11,246 @@ function CalendarSection() {
   const [showMealCard, setShowMealCard] = useState(false);
   const [showRecipe, setShowRecipe] = useState(false);
   const [meal, setMeal] = useState({});
+  const [currentMeal, setCurrentMeal] = useState();
   const [showGenerateMealPlan, setShowGenerateMealPlan] = useState(false);
+  const [datesWithMealPlans, setDatesWithMealPlans] = useState([]);
 
   React.useEffect(() => {
     console.log(`${value.getUTCMonth() + 1}/${value.getUTCDate()}`);
   }, [value]);
+  useEffect(() => {
+    const findAllMealPlanDates = () => {
+      const dates = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (/^\d+\/\d+$/.test(key)) {
+          dates.push(key);
+        }
+      }
+      return dates;
+    };
 
-  const mealplan_data = {
-    calories: 2009,
-    breakfast: {
-      calories: 542,
-      meals: [
+    setDatesWithMealPlans(findAllMealPlanDates());
+  }, []);
+
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const dates = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (/^\d+\/\d+$/.test(key)) {
+          dates.push(key);
+        }
+      }
+      setDatesWithMealPlans(dates);
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
+  const mealplan_data = [
+    {
+      name: "Scrambled Eggs",
+      meal_type: "breakfast",
+      ingredients: [
         {
-          name: "Peach and Blueberry Parfait",
-          recipe: "Recipe for Peach and Blueberry Parfait",
+          name: "Eggs",
+          amount: 2,
+          unit: "whole",
         },
         {
-          name: "Buttered Toast",
-          recipe: "Recipe for Buttered Toast",
+          name: "Milk",
+          amount: 0.03,
+          unit: "liter",
+        },
+        {
+          name: "Butter",
+          amount: 0.005,
+          unit: "kilogram",
+        },
+        {
+          name: "Salt",
+          amount: 0.001,
+          unit: "kilogram",
+        },
+        {
+          name: "Black Pepper",
+          amount: 0.0005,
+          unit: "kilogram",
         },
       ],
+      steps: [
+        "Crack the eggs into a bowl.",
+        "Add milk, salt, and pepper.",
+        "Whisk the ingredients together until well combined.",
+        "Melt butter in a non-stick pan over medium heat.",
+        "Pour the egg mixture into the pan.",
+        "Cook, stirring occasionally, until the eggs are set but still slightly moist.",
+        "Remove from heat and serve immediately.",
+      ],
+      size: 150,
+      calories: 837,
+      protein: 59,
     },
-    lunch: {
-      calories: 542,
-      meals: [
+    {
+      name: "Tuna Salad",
+      meal_type: "lunch",
+      ingredients: [
         {
-          name: "Raspberries and Blackberries Protein Smoothie",
-          recipe: "Recipe for Raspberries and Blackberries Protein Smoothie",
+          name: "Canned Tuna",
+          amount: 120,
+          unit: "g",
         },
         {
-          name: "Pinto Bean Salad",
-          recipe: "Recipe for Pinto Bean Salad",
+          name: "Mayonnaise",
+          amount: 20,
+          unit: "g",
+        },
+        {
+          name: "Celery",
+          amount: 30,
+          unit: "g",
+        },
+        {
+          name: "Red Onion",
+          amount: 15,
+          unit: "g",
+        },
+        {
+          name: "Lemon Juice",
+          amount: 5,
+          unit: "ml",
+        },
+        {
+          name: "Salt",
+          amount: 0.5,
+          unit: "g",
+        },
+        {
+          name: "Black Pepper",
+          amount: 0.3,
+          unit: "g",
+        },
+        {
+          name: "Lettuce",
+          amount: 50,
+          unit: "g",
         },
       ],
+      steps: [
+        "Drain the canned tuna.",
+        "Finely chop the celery and red onion.",
+        "In a bowl, combine the tuna, mayonnaise, celery, red onion, lemon juice, salt, and pepper.",
+        "Mix well until all ingredients are combined.",
+        "Serve the tuna salad on a bed of lettuce.",
+      ],
+      size: 240,
+      calories: 799,
+      protein: 35,
     },
-    dinner: {
-      calories: 542,
-      meals: [
+    {
+      name: "Chicken Stir-fry",
+      meal_type: "dinner",
+      ingredients: [
         {
-          name: "Kahuku Shrimp",
-          recipe: "Recipe for Kahuku Shrimp",
+          name: "Chicken Breast",
+          amount: 150,
+          unit: "grams",
         },
         {
-          name: "Easy Spinach and Scallion Salad",
-          recipe: "Recipe for Easy Spinach and Scallion Salad",
+          name: "Broccoli Florets",
+          amount: 100,
+          unit: "grams",
+        },
+        {
+          name: "Carrots",
+          amount: 50,
+          unit: "grams",
+        },
+        {
+          name: "Soy Sauce",
+          amount: 0.02,
+          unit: "liter",
+        },
+        {
+          name: "Sesame Oil",
+          amount: 0.005,
+          unit: "liter",
+        },
+        {
+          name: "Garlic",
+          amount: 2,
+          unit: "cloves",
+        },
+        {
+          name: "Ginger",
+          amount: 10,
+          unit: "grams",
+        },
+        {
+          name: "Brown Rice",
+          amount: 100,
+          unit: "grams",
         },
       ],
+      steps: [
+        "Cook brown rice according to package instructions.",
+        "Cut chicken breast into bite-sized pieces.",
+        "Heat sesame oil in a wok or large skillet over medium-high heat.",
+        "Add garlic and ginger to the wok and stir-fry for 30 seconds until fragrant.",
+        "Add chicken to the wok and stir-fry until cooked through.",
+        "Add broccoli florets and sliced carrots to the wok and stir-fry until tender-crisp.",
+        "Pour soy sauce over the chicken and vegetables and stir-fry to combine.",
+        "Serve chicken stir-fry over cooked brown rice.",
+      ],
+      size: 400,
+      calories: 960,
+      protein: 10,
     },
-  };
+  ];
 
   const handleDateChange = (date) => {
     setValue(date);
     setShowMealCard(true);
+    handleMealPlan(date);
   };
 
-  const handleMealPlan = () => {
-    setShowGenerateMealPlan(true);
-    console.log(showGenerateMealPlan);
+  const handleMealPlan = (date) => {
+    console.log("value", `${date.getUTCMonth() + 1}/${date.getUTCDate()}`);
+    if (
+      localStorage.getItem(`${date.getUTCMonth() + 1}/${date.getUTCDate()}`)
+    ) {
+      console.log(
+        JSON.parse(
+          localStorage.getItem(`${date.getUTCMonth() + 1}/${date.getUTCDate()}`)
+        )
+      );
+      setCurrentMeal(
+        JSON.parse(
+          localStorage.getItem(`${date.getUTCMonth() + 1}/${date.getUTCDate()}`)
+        )
+      );
+    } else {
+      setCurrentMeal();
+    }
   };
 
   const handleClose = () => {
     setShowMealCard(false);
     setShowRecipe(false);
     setShowGenerateMealPlan(false);
+  };
+
+  const tileClassName = ({ date, view }) => {
+    if (view !== "month") return null;
+
+    const dateKey = `${date.getUTCMonth() + 1}/${date.getUTCDate()}`;
+    if (datesWithMealPlans.includes(dateKey)) {
+      return "has-meal-plan";
+    }
+    return null;
   };
 
   return (
@@ -93,10 +270,11 @@ function CalendarSection() {
       >
         <Calendar
           className="Calendar"
-          onChange={handleDateChange}
           value={value}
+          onChange={handleDateChange}
+          tileClassName={tileClassName}
         />
-        {showMealCard && (
+        {showMealCard && currentMeal && (
           <div
             style={{
               position: "fixed", // or "absolute" if you want it relative to the parent
@@ -139,7 +317,7 @@ function CalendarSection() {
                 &times;
               </button>
               <MealCard
-                meals={mealplan_data}
+                meals={currentMeal}
                 date={value}
                 setShowMealCard={setShowMealCard}
                 setShowRecipe={setShowRecipe}
@@ -209,6 +387,7 @@ function CalendarSection() {
               alignItems: "center",
               justifyContent: "center",
               zIndex: 1000,
+              overflow: "auto",
             }}
             onClick={handleClose} // clicking the overlay closes the popup
           >
@@ -221,6 +400,8 @@ function CalendarSection() {
                 minWidth: "300px",
                 minHeight: "200px",
                 position: "relative",
+                maxHeight: "90vh",
+                overflowY: "auto",
               }}
               onClick={(e) => e.stopPropagation()} // prevent closing when clicking inside the popup
             >

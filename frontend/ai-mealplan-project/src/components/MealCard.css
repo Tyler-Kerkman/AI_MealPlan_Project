@@ -54,3 +54,11 @@
   background-color: #f0f0f0;
   border-radius: 0.25rem;
 }
+
+.meal-size {
+  font-size: 0.9rem;
+  color: #888;
+  margin: 0;
+  margin-bottom: 12px;
+  padding: 0.25rem;
+}

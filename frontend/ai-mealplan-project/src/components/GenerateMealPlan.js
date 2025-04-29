@@ -1,17 +1,30 @@
 import React, { useState, useRef, useEffect } from "react";
 import DatePicker from "react-multi-date-picker";
-import { Button, TextField } from "@mui/material";
+import {
+  Button,
+  TextField,
+  Card,
+  CardContent,
+  CircularProgress,
+  Alert,
+} from "@mui/material";
 import axios from "axios";
 
 export default function GenerateMealPlan() {
   const [value, setValue] = useState(new Date());
   const [healthGoal, setHealthGoal] = useState("");
   const [mealPlan, setMealPlan] = useState(null);
+  const [loading, setLoading] = useState(false); // <-- new
+  const [error, setError] = useState(null); // <-- new
+  const [success, setSuccess] = useState(false);
   const datePickerRef = useRef();
 
   const handleGenerateMealPlan = async () => {
     try {
-      // Calculate the number of days selected
+      setLoading(true);
+      setError(null);
+      setSuccess(false);
+
       const days = value.length ? value.length : 1;
 
       const requestBody = {
@@ -28,8 +41,12 @@ export default function GenerateMealPlan() {
 
       console.log("Received meal plan:", response.data);
       setMealPlan(response.data);
+      setSuccess(true);
     } catch (error) {
       console.error("Error generating meal plan:", error);
+      setError("Failed to generate meal plan. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -88,9 +105,29 @@ export default function GenerateMealPlan() {
           onChange={(e) => setHealthGoal(e.target.value)}
         />
       </div>
-      <Button variant="contained" onClick={handleGenerateMealPlan}>
-        Generate Meal Plan
+      <Button
+        variant="contained"
+        onClick={handleGenerateMealPlan}
+        disabled={loading}
+      >
+        {loading ? "Generating..." : "Generate Meal Plan"}
       </Button>
+
+      {loading && (
+        <div style={{ marginTop: "20px" }}>
+          <CircularProgress />
+        </div>
+      )}
+
+      {success && !loading && (
+        <h2 style={{ textAlign: "center" }}>Meal Plan Generated</h2>
+      )}
+
+      {error && !loading && (
+        <Alert severity="error" style={{ marginTop: "20px", width: "300px" }}>
+          {error}
+        </Alert>
+      )}
     </div>
   );
 }

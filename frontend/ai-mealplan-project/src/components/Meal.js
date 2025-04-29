@@ -22,6 +22,7 @@ function Meal({ meal, setShowMealCard, setShowRecipe, setMeal }) {
         >
           {meal.name}
         </p>
+        <p className="meal-size">{meal.size} g</p>
       </div>
     </div>
   );

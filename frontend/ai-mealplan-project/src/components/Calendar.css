@@ -164,3 +164,10 @@
 .react-calendar--selectRange .react-calendar__tile--hover {
   background-color: #e6e6e6;
 }
+
+.has-meal-plan {
+  background-color: #e6f7ff !important;
+  color: #1976d2 !important;
+  font-weight: bold;
+  position: relative;
+}
