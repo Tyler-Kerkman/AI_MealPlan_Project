@@ -4,12 +4,14 @@ import "./Calendar.css";
 import MealCard from "./MealCard";
 import { Button, recomposeColor } from "@mui/material";
 import Recipe from "./Recipe";
+import GenerateMealPlan from "./GenerateMealPlan";
 
 function CalendarSection() {
   const [value, setValue] = useState(new Date());
   const [showMealCard, setShowMealCard] = useState(false);
   const [showRecipe, setShowRecipe] = useState(false);
   const [meal, setMeal] = useState({});
+  const [showGenerateMealPlan, setShowGenerateMealPlan] = useState(false);
 
   React.useEffect(() => {
     console.log(`${value.getUTCMonth() + 1}/${value.getUTCDate()}`);
@@ -63,14 +65,22 @@ function CalendarSection() {
     setShowMealCard(true);
   };
 
+  const handleMealPlan = () => {
+    setShowGenerateMealPlan(true);
+    console.log(showGenerateMealPlan);
+  };
+
   const handleClose = () => {
     setShowMealCard(false);
     setShowRecipe(false);
+    setShowGenerateMealPlan(false);
   };
 
   return (
     <div>
-      <Button variant="contained">Generate Meal Plan</Button>
+      <Button variant="contained" onClick={() => setShowGenerateMealPlan(true)}>
+        Generate Meal Plan
+      </Button>
       <div
         style={{
           position: "relative",
@@ -135,6 +145,53 @@ function CalendarSection() {
                 setShowRecipe={setShowRecipe}
                 setMeal={setMeal}
               />
+            </div>
+          </div>
+        )}
+
+        {showGenerateMealPlan && (
+          <div
+            style={{
+              position: "fixed", // or "absolute" if you want it relative to the parent
+              top: 0,
+              left: 0,
+              width: "100vw",
+              height: "100vh",
+              background: "rgba(0,0,0,0.4)", // semi-transparent overlay
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              zIndex: 1000,
+            }}
+            onClick={handleClose} // clicking the overlay closes the popup
+          >
+            <div
+              style={{
+                background: "#fff",
+                padding: "2rem",
+                borderRadius: "12px",
+                boxShadow: "0 2px 16px rgba(0,0,0,0.2)",
+                minWidth: "600px",
+                minHeight: "400px",
+                position: "relative",
+              }}
+              onClick={(e) => e.stopPropagation()} // prevent closing when clicking inside the popup
+            >
+              <button
+                style={{
+                  position: "absolute",
+                  top: "1rem",
+                  right: "1rem",
+                  background: "transparent",
+                  border: "none",
+                  fontSize: "1.5rem",
+                  cursor: "pointer",
+                }}
+                onClick={handleClose}
+              >
+                &times;
+              </button>
+              <GenerateMealPlan />
             </div>
           </div>
         )}
