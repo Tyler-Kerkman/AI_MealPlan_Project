@@ -4,10 +4,10 @@
 import json
 from typing import Dict, List
 
-from fastapi import FastAPI
+import pandas as pd
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from google import genai
-from openfoodfacts import API
 from pydantic import BaseModel
 
 app = FastAPI()
@@ -22,7 +22,25 @@ app.add_middleware(
 
 client = genai.Client(api_key="AIzaSyBzRdsuxmweKGmWcQjTQu9DpSeJVZCLMS0")
 
-api = API(user_agent="TestApp/1.0", timeout=120)
+columns_to_use = [
+    "product_name",
+    "brands",
+    "categories",
+    "ingredients_text",
+    "nutriscore_score",
+    "nutriscore_grade",
+    "energy-kcal_100g",
+    "proteins_100g"
+]
+
+df = pd.read_csv(
+    "en.openfoodfacts.org.products.csv",
+    sep="\t",
+    encoding="utf-8",
+    usecols=columns_to_use,
+    on_bad_lines='skip',
+    low_memory=False
+)
 
 class Ingredient(BaseModel):
     name: str
@@ -47,7 +65,21 @@ class MealPlanParams(BaseModel):
     goal: str
     days: int
 
-system_prompt = """
+class Activity(BaseModel):
+    name: str
+    sets: int
+    reps: int
+
+class Workout(BaseModel):
+    name: str
+    duration: int # minutes
+    activities: List[Activity]
+
+class WorkoutPlanParams(BaseModel):
+    goal: str
+    days: int
+
+meal_prompt = """
 You are an AI agent tasked with generating a completely unique meal in JSON format. 
 Each time you generate a meal, it must be distinct from previous outputs.
 
@@ -73,15 +105,56 @@ Strict rules for meal name and JSON formatting:
 Previous meal names:
 """
 
+workout_prompt = """
+You are an AI agent tasked with generating a structured workout plan in JSON format for a user-defined goal and duration.
+
+The workout plan should:
+- Be tailored to the provided **fitness goal** (e.g., "muscle gain", "weight loss", "endurance", "general fitness").
+- Last for a specified number of **consecutive days**.
+- Provide a **unique and varied set of workouts** across the days, avoiding repetition.
+- Return a list of JSON objects, each representing one day’s workout, following this exact schema:
+
+[
+  {
+    "name": "<workout name>",
+    "duration": <total duration in minutes>,
+    "activities": [
+      {
+        "name": "<exercise name>",
+        "sets": <number of sets>,
+        "reps": <number of reps per set>
+      },
+      ...
+    ]
+  },
+  ...
+]
+
+Formatting and content rules:
+- The workout plan must be valid JSON with **no additional commentary or text** outside the structure.
+- Each workout must have a **generic and recognizable** name, 2–4 words maximum (e.g., "Upper Body Strength", "Cardio Endurance", "Full Body Circuit").
+- Exercise names should be common, well-known movements (e.g., "Push Ups", "Jumping Jacks", "Squats", "Plank", "Burpees", "Lunges").
+- No exercise should include brand names or uncommon techniques.
+- All numbers must be integers. No floating point or fractional values.
+- Avoid repeating workouts or exercises across days where possible—keep the plan varied.
+- Do not return rest days; every day must have a full workout.
+
+Inputs:
+- `goal`: the user's fitness goal (string).
+- `days`: the number of consecutive days in the workout plan (integer).
+
+Example goals include: "build muscle", "lose weight", "increase stamina", "improve flexibility", "general fitness".
+"""
+
 def generate_meal(prev_meal_names, meal_type, goal):
     result = None
 
     while result is None:
-        full_prompt = system_prompt + ", ".join(prev_meal_names)
-        full_prompt += f"\nThe meal should be suitable for {meal_type}."
-        full_prompt += f"\nThe meal should be tailored toward a {goal} goal."
+        full_meal_prompt = meal_prompt + ", ".join(prev_meal_names)
+        full_meal_prompt += f"\nThe meal should be suitable for {meal_type}."
+        full_meal_prompt += f"\nThe meal should be tailored toward a {goal} goal."
 
-        response = client.models.generate_content(model="gemini-2.0-flash", contents=full_prompt)
+        response = client.models.generate_content(model="gemini-2.0-flash", contents=full_meal_prompt)
 
         try:
             content_text = response.candidates[0].content.parts[0].text
@@ -97,25 +170,18 @@ def generate_meal(prev_meal_names, meal_type, goal):
 
         meal_name = meal_json.get("name", "").strip().lower()
 
-        print("Searching OpenFoodFacts for:", meal_name)
+        print("Searching local DataFrame for:", meal_name)
 
-        try:
-            search_result = api.product.text_search(meal_name)
-        except Exception as e:
-            print(f"API call failed: {e}")
+        matches = df[df["product_name"].str.lower() == meal_name]
+
+        if matches.empty:
+            print(f"No match found in local dataset for '{meal_name}'. Retrying...")
             continue
 
-        products = search_result.get('products', [])
+        best_product = matches.sort_values(by="nutriscore_score", ascending=False).iloc[0]
 
-        if not products:
-            print(f"No product found for '{meal_name}'. Retrying...")
-            continue
-
-        best_product = max(products, key=lambda p: p.get('nutriscore_score', 0))
-
-        nutriments = best_product.get('nutriments', {})
-        calories_per_100 = nutriments.get('energy-kcal_100g', 0)
-        protein_per_100 = nutriments.get('proteins_100g', 0)
+        calories_per_100 = best_product.get("energy-kcal_100g", 0) or 0
+        protein_per_100 = best_product.get("proteins_100g", 0) or 0
 
         size = meal_json.get("size", 100)
 
@@ -163,3 +229,29 @@ def generate_meal_plan(request: MealPlanParams):
               meal_plan[day].append(meal)
 
     return meal_plan
+
+@app.post("/generateWorkoutPlan", response_model=List[Workout])
+def generate_workout_plan(request: WorkoutPlanParams):
+    full_workout_prompt = workout_prompt
+    full_workout_prompt += f"""
+                            Goal: {request.goal}
+                            Days: {request.days}
+                            """
+    
+    try:
+        response = client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=full_workout_prompt
+        )
+        content_text = response.candidates[0].content.parts[0].text
+
+        if content_text.startswith("```json"):
+            import re
+            content_text = re.sub(r"^```json\n|\n```$", "", content_text.strip())
+
+        workout_plan_json = json.loads(content_text)
+        return workout_plan_json
+
+    except Exception as e:
+        print(f"Failed parsing workout plan: {e}")
+        raise HTTPException(status_code=500, detail="Failed to generate or parse workout plan.")

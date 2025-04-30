@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+import { Button } from "@mui/material";
+import React, { useEffect, useState } from "react";
 import Calendar from "react-calendar";
 import "./Calendar.css";
-import MealCard from "./MealCard";
-import { Button, recomposeColor } from "@mui/material";
-import Recipe from "./Recipe";
 import GenerateMealPlan from "./GenerateMealPlan";
+import MealCard from "./MealCard";
+import Recipe from "./Recipe";
 
 function CalendarSection() {
   const [value, setValue] = useState(new Date());

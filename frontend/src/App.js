@@ -1,31 +1,11 @@
+import React, { useState } from "react";
 import CalendarSection from "./components/CalendarSection";
 import Navbar from "./components/Navbar";
 import NutritionSection from "./components/NutritionSection";
 import WorkoutSection from "./components/WorkoutSection";
 
 function App() {
-  const workout_data = {
-    weightlifting: {
-      type: "Chest Focused",
-      exercises: [
-        "Barbell Bench Press",
-        "Dumbell Incline Press",
-        "Chest Fly",
-        "Overhead Tricep Extension",
-        "Tricep Push Down",
-      ],
-    },
-    cardio: {
-      type: "Endurance Focused",
-      exercises: [
-        "Treadmill Running",
-        "Stationary Biking",
-        "Rowing Machine",
-        "Jump Rope",
-        "Stair Climber",
-      ],
-    },
-  };
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
   return (
     <div
@@ -90,7 +70,7 @@ function App() {
               borderRadius: ".75rem",
             }}
           >
-            <WorkoutSection workout_data={workout_data} />
+            <WorkoutSection />
           </div>
         </div>
 
