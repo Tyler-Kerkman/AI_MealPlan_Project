@@ -8,6 +8,7 @@ import pandas as pd
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from google import genai
+from openfoodfacts import API
 from pydantic import BaseModel
 
 app = FastAPI()
@@ -22,25 +23,32 @@ app.add_middleware(
 
 client = genai.Client(api_key="AIzaSyBzRdsuxmweKGmWcQjTQu9DpSeJVZCLMS0")
 
-columns_to_use = [
-    "product_name",
-    "brands",
-    "categories",
-    "ingredients_text",
-    "nutriscore_score",
-    "nutriscore_grade",
-    "energy-kcal_100g",
-    "proteins_100g"
-]
+format = ''
+while format != 'api' and format != 'df':
+    format = str(input("Use \'api\' or \'df\' (high ram)?: "))
 
-df = pd.read_csv(
-    "en.openfoodfacts.org.products.csv",
-    sep="\t",
-    encoding="utf-8",
-    usecols=columns_to_use,
-    on_bad_lines='skip',
-    low_memory=False
-)
+if format == 'api':
+    api = API(user_agent="TestApp/1.0")
+else: 
+    columns_to_use = [
+        "product_name",
+        "brands",
+        "categories",
+        "ingredients_text",
+        "nutriscore_score",
+        "nutriscore_grade",
+        "energy-kcal_100g",
+        "proteins_100g"
+    ]
+
+    df = pd.read_csv(
+        "en.openfoodfacts.org.products.csv",
+        sep="\t",
+        encoding="utf-8",
+        usecols=columns_to_use,
+        on_bad_lines='skip',
+        low_memory=False
+    )
 
 class Ingredient(BaseModel):
     name: str
@@ -170,21 +178,30 @@ def generate_meal(prev_meal_names, meal_type, goal):
 
         meal_name = meal_json.get("name", "").strip().lower()
 
-        print("Searching local DataFrame for:", meal_name)
+        print("Searching for:", meal_name)
 
-        matches = df[df["product_name"].str.lower() == meal_name]
+        calories_per_100 = 0
+        protein_per_100 = 0
 
-        if matches.empty:
-            print(f"No match found in local dataset for '{meal_name}'. Retrying...")
-            continue
+        if format == "df" and df is not None:
+            matches = df[df["product_name"].str.lower() == meal_name]
+            if matches.empty:
+                print(f"No match found in DataFrame for '{meal_name}'. Retrying...")
+                continue
+            best_product = matches.sort_values(by="nutriscore_score", ascending=False).iloc[0]
+            calories_per_100 = best_product.get("energy-kcal_100g", 0) or 0
+            protein_per_100 = best_product.get("proteins_100g", 0) or 0
 
-        best_product = matches.sort_values(by="nutriscore_score", ascending=False).iloc[0]
-
-        calories_per_100 = best_product.get("energy-kcal_100g", 0) or 0
-        protein_per_100 = best_product.get("proteins_100g", 0) or 0
+        else:
+            products = list(api.products.search(meal_name, page=1, page_size=5))
+            if not products:
+                print(f"No match found in OpenFoodFacts API for '{meal_name}'. Retrying...")
+                continue
+            product = products[0].to_dict()
+            calories_per_100 = product.get("nutriments", {}).get("energy-kcal_100g", 0)
+            protein_per_100 = product.get("nutriments", {}).get("proteins_100g", 0)
 
         size = meal_json.get("size", 100)
-
         actual_calories = int(calories_per_100 * (size / 100)) if calories_per_100 else 0
         actual_protein = int(protein_per_100 * (size / 100)) if protein_per_100 else 0
 
