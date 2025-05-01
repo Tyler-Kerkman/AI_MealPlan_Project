@@ -5,6 +5,7 @@ import "./Calendar.css";
 import GenerateMealPlan from "./GenerateMealPlan";
 import MealCard from "./MealCard";
 import Recipe from "./Recipe";
+import IngredientsList from "./IngredientsList";
 
 function CalendarSection({ setSelectedDate }) {
   const [value, setValue] = useState(new Date());
@@ -14,6 +15,7 @@ function CalendarSection({ setSelectedDate }) {
   const [currentMeal, setCurrentMeal] = useState();
   const [showGenerateMealPlan, setShowGenerateMealPlan] = useState(false);
   const [datesWithMealPlans, setDatesWithMealPlans] = useState([]);
+  const [showIngredientsList, setShowIngredientsList] = useState(false);
 
   React.useEffect(() => {
     setSelectedDate(value);
@@ -235,6 +237,7 @@ function CalendarSection({ setSelectedDate }) {
     setShowMealCard(false);
     setShowRecipe(false);
     setShowGenerateMealPlan(false);
+    setShowIngredientsList(false);
   };
 
   const tileClassName = ({ date, view }) => {
@@ -251,6 +254,9 @@ function CalendarSection({ setSelectedDate }) {
     <div>
       <Button variant="contained" onClick={() => setShowGenerateMealPlan(true)}>
         Generate Meal Plan
+      </Button>
+      <Button variant="contained" onClick={() => setShowIngredientsList(true)}>
+        Generate Ingredients List
       </Button>
       <div
         style={{
@@ -418,6 +424,53 @@ function CalendarSection({ setSelectedDate }) {
           </div>
         )}
       </div>
+
+      {showIngredientsList && (
+        <div
+          style={{
+            position: "fixed", // or "absolute" if you want it relative to the parent
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            background: "rgba(0,0,0,0.4)", // semi-transparent overlay
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000,
+          }}
+          onClick={handleClose} // clicking the overlay closes the popup
+        >
+          <div
+            style={{
+              background: "#fff",
+              padding: "2rem",
+              borderRadius: "12px",
+              boxShadow: "0 2px 16px rgba(0,0,0,0.2)",
+              minWidth: "600px",
+              minHeight: "400px",
+              position: "relative",
+            }}
+            onClick={(e) => e.stopPropagation()} // prevent closing when clicking inside the popup
+          >
+            <button
+              style={{
+                position: "absolute",
+                top: "1rem",
+                right: "1rem",
+                background: "transparent",
+                border: "none",
+                fontSize: "1.5rem",
+                cursor: "pointer",
+              }}
+              onClick={handleClose}
+            >
+              &times;
+            </button>
+            <IngredientsList setShowIngredientsList={setShowIngredientsList} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
