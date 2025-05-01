@@ -35,9 +35,9 @@ function NutritionSection() {
 
     let parsedInfo = {
       calories: 0,
-      calories_goal: 0,
+      calories_goal: 2500,
       protein: 0,
-      protein_goal: 0,
+      protein_goal: 150,
     };
 
     if (savedInfo) {
