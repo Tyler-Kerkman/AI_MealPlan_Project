@@ -255,7 +255,7 @@ function CalendarSection({ setSelectedDate }) {
       <Button variant="contained" onClick={() => setShowGenerateMealPlan(true)}>
         Generate Meal Plan
       </Button>
-      <Button variant="contained" onClick={() => setShowIngredientsList(true)}>
+      <Button variant="contained" style={{ marginLeft: "1rem" }} onClick={() => setShowIngredientsList(true)}>
         Generate Ingredients List
       </Button>
       <div
