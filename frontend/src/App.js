@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import CalendarSection from "./components/CalendarSection";
 import Navbar from "./components/Navbar";
 import NutritionSection from "./components/NutritionSection";
@@ -70,7 +70,7 @@ function App() {
               borderRadius: ".75rem",
             }}
           >
-            <WorkoutSection />
+            <WorkoutSection selectedDate={selectedDate} />
           </div>
         </div>
 
@@ -82,7 +82,7 @@ function App() {
             overflowX: "hidden",
           }}
         >
-          <CalendarSection />
+          <CalendarSection setSelectedDate={setSelectedDate} />
         </div>
       </div>
     </div>

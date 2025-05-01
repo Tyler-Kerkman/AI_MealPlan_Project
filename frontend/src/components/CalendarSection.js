@@ -6,7 +6,7 @@ import GenerateMealPlan from "./GenerateMealPlan";
 import MealCard from "./MealCard";
 import Recipe from "./Recipe";
 
-function CalendarSection() {
+function CalendarSection({ setSelectedDate }) {
   const [value, setValue] = useState(new Date());
   const [showMealCard, setShowMealCard] = useState(false);
   const [showRecipe, setShowRecipe] = useState(false);
@@ -16,7 +16,7 @@ function CalendarSection() {
   const [datesWithMealPlans, setDatesWithMealPlans] = useState([]);
 
   React.useEffect(() => {
-    console.log(`${value.getUTCMonth() + 1}/${value.getUTCDate()}`);
+    setSelectedDate(value);
   }, [value]);
   useEffect(() => {
     const findAllMealPlanDates = () => {
@@ -218,15 +218,9 @@ function CalendarSection() {
   };
 
   const handleMealPlan = (date) => {
-    console.log("value", `${date.getUTCMonth() + 1}/${date.getUTCDate()}`);
     if (
       localStorage.getItem(`${date.getUTCMonth() + 1}/${date.getUTCDate()}`)
     ) {
-      console.log(
-        JSON.parse(
-          localStorage.getItem(`${date.getUTCMonth() + 1}/${date.getUTCDate()}`)
-        )
-      );
       setCurrentMeal(
         JSON.parse(
           localStorage.getItem(`${date.getUTCMonth() + 1}/${date.getUTCDate()}`)

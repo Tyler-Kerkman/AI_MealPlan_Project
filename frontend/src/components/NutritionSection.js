@@ -121,7 +121,6 @@ function NutritionSection() {
 
   const handleDateChange = () => {
     const dateKey = date.toISOString().split("T")[0] + "-nutrition";
-    console.log(dateKey);
     const savedInfo = localStorage.getItem(dateKey);
 
     if (savedInfo) {
