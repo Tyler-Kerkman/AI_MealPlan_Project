@@ -193,13 +193,14 @@ def generate_meal(prev_meal_names, meal_type, goal):
             protein_per_100 = best_product.get("proteins_100g", 0) or 0
 
         else:
-            products = list(api.products.search(meal_name, page=1, page_size=5))
+            result = api.product.text_search(meal_name)
+            products = result.get('products', [])
             if not products:
                 print(f"No match found in OpenFoodFacts API for '{meal_name}'. Retrying...")
                 continue
-            product = products[0].to_dict()
-            calories_per_100 = product.get("nutriments", {}).get("energy-kcal_100g", 0)
-            protein_per_100 = product.get("nutriments", {}).get("proteins_100g", 0)
+            best_product = max(products, key=lambda p: p.get('nurtiscore_score', 0))
+            calories_per_100 = best_product.get("nutriments", {}).get("energy-kcal_100g", 0)
+            protein_per_100 = best_product.get("nutriments", {}).get("proteins_100g", 0)
 
         size = meal_json.get("size", 100)
         actual_calories = int(calories_per_100 * (size / 100)) if calories_per_100 else 0
