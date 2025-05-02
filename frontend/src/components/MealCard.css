@@ -30,6 +30,7 @@
 .meal-card__section h2 {
   font-size: 1.4rem;
   color: #444;
+  margin: 0;
   margin-bottom: 4px;
 }
 

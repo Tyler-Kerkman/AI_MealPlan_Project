@@ -28,7 +28,7 @@ while format != 'api' and format != 'df':
     format = str(input("Use \'api\' or \'df\' (high ram)?: "))
 
 if format == 'api':
-    api = API(user_agent="TestApp/1.0")
+    api = API(user_agent="TestApp/1.0", timeout=120 )
 else: 
     columns_to_use = [
         "product_name",
