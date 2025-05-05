@@ -7,6 +7,10 @@ import {
   CardContent,
   CircularProgress,
   Alert,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
 } from "@mui/material";
 import axios from "axios";
 
@@ -102,14 +106,21 @@ export default function GenerateMealPlan({ setHealthGoal, healthGoal }) {
           Close
         </Button>
       </div>
-      <div style={{ marginTop: "24px", marginBottom: "24px" }}>
-        <TextField
-          id="outlined-basic"
-          label="Health Goal"
-          variant="outlined"
-          value={healthGoal}
-          onChange={(e) => setHealthGoal(e.target.value)}
-        />
+      <div style={{ marginTop: "24px", marginBottom: "24px", width: "40%" }}>
+        <FormControl fullWidth>
+          <InputLabel id="demo-simple-select-label">Health Goal</InputLabel>
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            value={healthGoal}
+            label="Health Goal"
+            onChange={(e) => setHealthGoal(e.target.value)}
+          >
+            <MenuItem value={"weight loss"}>Weight Loss</MenuItem>
+            <MenuItem value={"muscle gain"}>Muscle Gain</MenuItem>
+            <MenuItem value={"maintain weight"}>Maintain Weight</MenuItem>
+          </Select>
+        </FormControl>
       </div>
       <Button
         variant="contained"
