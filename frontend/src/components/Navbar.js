@@ -24,7 +24,7 @@ function Navbar() {
     >
       <div style={{ display: "flex", gap: "1rem" }}>
         <BsMenuButtonWide size={24} color="white" />
-        <img src={logo} style={{ height: "1rem" }} />
+        <img src={logo} style={{ height: "1.5rem" }} />
       </div>
       <div style={{ display: "flex", gap: "1rem" }}>
         <BsBookmark size={24} color="white" />
