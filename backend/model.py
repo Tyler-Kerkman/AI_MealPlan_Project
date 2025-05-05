@@ -60,9 +60,9 @@ class Meal(BaseModel):
     meal_type: str
     ingredients: List[Ingredient]
     steps: List[str]
-    size: int
-    calories: int
-    protein: int
+    size: float
+    calories: float
+    protein: float
 
 class SingleMealParams(BaseModel):
     goal: str
@@ -104,7 +104,7 @@ Strict rules for meal name and JSON formatting:
 - Examples of unacceptable meal names: "French Toast with Strawberries and Maple Syrup", "Pepperoni Pizza with Mushrooms", "Vegan Thai Coconut Curry with Rice".
 - Stick to traditional, globally recognized meals.
 - Avoid brand names, unique fusions, or highly regional dishes.
-- All ingredient amounts must be written as decimal numbers (e.g., `0.5` instead of `1/2`).
+- All ingredient amounts must be written as decimal numbers not fractions (e.g., `0.5` instead of `1/2`).
 - The output must be strictly valid JSON with correct syntax.
 - Do not add any commentary or explanation outside of the JSON structure.
 - Only use ingredients that are standard and commonly available in grocery stores.
@@ -205,6 +205,9 @@ def generate_meal(prev_meal_names, meal_type, goal):
         size = meal_json.get("size", 100)
         actual_calories = int(calories_per_100 * (size / 100)) if calories_per_100 else 0
         actual_protein = int(protein_per_100 * (size / 100)) if protein_per_100 else 0
+
+        if actual_calories > 800:
+            actual_calories = actual_calories / 2
 
         ingredients = [
             Ingredient(
