@@ -10,12 +10,11 @@ import {
 } from "@mui/material";
 import axios from "axios";
 
-export default function GenerateMealPlan() {
+export default function GenerateMealPlan({ setHealthGoal, healthGoal }) {
   const [value, setValue] = useState(new Date());
-  const [healthGoal, setHealthGoal] = useState("");
-  const [mealPlan, setMealPlan] = useState(null);
-  const [loading, setLoading] = useState(false); // <-- new
-  const [error, setError] = useState(null); // <-- new
+  const [mealPlan, setMealPlan] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   const datePickerRef = useRef();
 
@@ -59,11 +58,18 @@ export default function GenerateMealPlan() {
             JSON.stringify(mealPlan[0])
           );
         }
-      } else {
+      } else if (!Array.isArray(value)) {
         localStorage.setItem(
           `${value[0].month.number}/${value[0].day}`,
           JSON.stringify(mealPlan[0])
         );
+      } else if (Array.isArray(value)) {
+        for (let i = 0; i < value.length; i++) {
+          localStorage.setItem(
+            `${value[i].month.number}/${value[i].day}`,
+            JSON.stringify(mealPlan[i])
+          );
+        }
       }
     }
   }, [mealPlan]);

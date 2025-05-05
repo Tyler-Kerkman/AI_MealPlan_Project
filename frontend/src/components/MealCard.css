@@ -65,3 +65,13 @@
   margin-bottom: 12px;
   padding: 0.25rem;
 }
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}

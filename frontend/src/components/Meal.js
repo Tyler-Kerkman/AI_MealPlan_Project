@@ -2,7 +2,7 @@ import React from "react";
 import { BsCake } from "react-icons/bs";
 import "./MealCard.css";
 
-function Meal({ meal, setShowMealCard, setShowRecipe, setMeal }) {
+function Meal({ meal, setShowMealCard, setShowRecipe, setSelectedMeal }) {
   return (
     <div
       style={{
@@ -16,7 +16,7 @@ function Meal({ meal, setShowMealCard, setShowRecipe, setMeal }) {
           className="meal-item"
           onClick={() => {
             setShowMealCard(false);
-            setMeal(meal);
+            setSelectedMeal(meal);
             setShowRecipe(true);
           }}
         >

@@ -11,11 +11,12 @@ function CalendarSection({ setSelectedDate }) {
   const [value, setValue] = useState(new Date());
   const [showMealCard, setShowMealCard] = useState(false);
   const [showRecipe, setShowRecipe] = useState(false);
-  const [meal, setMeal] = useState({});
-  const [currentMeal, setCurrentMeal] = useState();
+  const [meal, setMeal] = useState([]);
+  const [currentMeal, setCurrentMeal] = useState([]);
   const [showGenerateMealPlan, setShowGenerateMealPlan] = useState(false);
   const [datesWithMealPlans, setDatesWithMealPlans] = useState([]);
   const [showIngredientsList, setShowIngredientsList] = useState(false);
+  const [healthGoal, setHealthGoal] = useState("");
 
   React.useEffect(() => {
     setSelectedDate(value);
@@ -221,11 +222,15 @@ function CalendarSection({ setSelectedDate }) {
 
   const handleMealPlan = (date) => {
     if (
-      localStorage.getItem(`${date.getUTCMonth() + 1}/${date.getUTCDate()}`)
+      localStorage.getItem(
+        `${date.getUTCMonth() + 1}/${date.getUTCDate()}` || "[]"
+      )
     ) {
       setCurrentMeal(
         JSON.parse(
-          localStorage.getItem(`${date.getUTCMonth() + 1}/${date.getUTCDate()}`)
+          localStorage.getItem(
+            `${date.getUTCMonth() + 1}/${date.getUTCDate()}` || "[]"
+          )
         )
       );
     } else {
@@ -255,7 +260,11 @@ function CalendarSection({ setSelectedDate }) {
       <Button variant="contained" onClick={() => setShowGenerateMealPlan(true)}>
         Generate Meal Plan
       </Button>
-      <Button variant="contained" style={{ marginLeft: "1rem" }} onClick={() => setShowIngredientsList(true)}>
+      <Button
+        variant="contained"
+        style={{ marginLeft: "1rem" }}
+        onClick={() => setShowIngredientsList(true)}
+      >
         Generate Ingredients List
       </Button>
       <div
@@ -321,7 +330,9 @@ function CalendarSection({ setSelectedDate }) {
                 date={value}
                 setShowMealCard={setShowMealCard}
                 setShowRecipe={setShowRecipe}
-                setMeal={setMeal}
+                healthGoal={healthGoal}
+                setSelectedMeal={setMeal}
+                setCurrentMeal={setCurrentMeal}
               />
             </div>
           </div>
@@ -369,7 +380,10 @@ function CalendarSection({ setSelectedDate }) {
               >
                 &times;
               </button>
-              <GenerateMealPlan />
+              <GenerateMealPlan
+                setHealthGoal={setHealthGoal}
+                healthGoal={healthGoal}
+              />
             </div>
           </div>
         )}

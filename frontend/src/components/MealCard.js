@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Meal from "./Meal";
 import "./MealCard.css";
 import { BsArrowRepeat } from "react-icons/bs";
@@ -27,8 +27,16 @@ import axios from "axios";
  *  }
  *
  */
-function MealCard({ meals, date, setShowMealCard, setShowRecipe, setMeal }) {
-  // Format the date to a readable string
+function MealCard({
+  meals,
+  date,
+  setShowMealCard,
+  setShowRecipe,
+  setSelectedMeal,
+  healthGoal,
+  setCurrentMeal,
+}) {
+  const [loadingMealType, setLoadingMealType] = useState(null);
   const formattedDate = date.toLocaleDateString("en-US", {
     weekday: "long",
     month: "long",
@@ -36,9 +44,10 @@ function MealCard({ meals, date, setShowMealCard, setShowRecipe, setMeal }) {
   });
 
   const handleSingleMeal = async (mealType) => {
+    setLoadingMealType(mealType);
     try {
       const requestBody = {
-        goal: "weight loss",
+        goal: healthGoal,
         mealType: mealType,
         currentMeals: [meals[0].name, meals[1].name, meals[2].name],
       };
@@ -51,26 +60,32 @@ function MealCard({ meals, date, setShowMealCard, setShowRecipe, setMeal }) {
       );
 
       console.log("Received meal plan:", response.data);
-      updateLocalStorage(response.data);
-      setMeal((prevMeals) => {
+      updateLocalStorage(response.data, mealType);
+      setSelectedMeal((prevMeals) => {
         return prevMeals.map((meal) =>
-          meal.meal_type === "breakfast" ? response.data : meal
+          meal.meal_type === mealType ? response.data : meal
         );
       });
     } catch (error) {
       console.error("Error generating meal plan:", error);
+    } finally {
+      setLoadingMealType(null);
     }
   };
 
-  const updateLocalStorage = (newMeal) => {
+  const updateLocalStorage = (newMeal, mealType) => {
     const key = `${date.getMonth() + 1}/${date.getDate()}`;
     const existingData = JSON.parse(localStorage.getItem(key)) || [];
 
-    // Replace the breakfast meal
     const updatedData = existingData.map((meal) =>
-      meal.meal_type === "breakfast" ? newMeal : meal
+      meal.meal_type === mealType ? newMeal : meal
     );
     localStorage.setItem(key, JSON.stringify(updatedData));
+    setCurrentMeal(
+      JSON.parse(
+        localStorage.getItem(`${date.getUTCMonth() + 1}/${date.getUTCDate()}`)
+      )
+    );
   };
 
   return (
@@ -91,6 +106,7 @@ function MealCard({ meals, date, setShowMealCard, setShowRecipe, setMeal }) {
         >
           <h2>Breakfast</h2>
           <BsArrowRepeat
+            className={loadingMealType === "breakfast" ? "spin" : ""}
             style={{ fontSize: "1.25rem", cursor: "pointer" }}
             onClick={() => handleSingleMeal("breakfast")}
           />
@@ -104,7 +120,7 @@ function MealCard({ meals, date, setShowMealCard, setShowRecipe, setMeal }) {
             meal={meals[0]}
             setShowMealCard={setShowMealCard}
             setShowRecipe={setShowRecipe}
-            setMeal={setMeal}
+            setSelectedMeal={setSelectedMeal}
           />
         </div>
       </div>
@@ -118,7 +134,11 @@ function MealCard({ meals, date, setShowMealCard, setShowRecipe, setMeal }) {
           }}
         >
           <h2>Lunch</h2>
-          <BsArrowRepeat style={{ fontSize: "1.25rem", cursor: "pointer" }} />
+          <BsArrowRepeat
+            className={loadingMealType === "lunch" ? "spin" : ""}
+            style={{ fontSize: "1.25rem", cursor: "pointer" }}
+            onClick={() => handleSingleMeal("lunch")}
+          />
         </div>{" "}
         <p className="meal-card__section-calories">
           {meals[1].calories} calories
@@ -128,7 +148,7 @@ function MealCard({ meals, date, setShowMealCard, setShowRecipe, setMeal }) {
             meal={meals[1]}
             setShowMealCard={setShowMealCard}
             setShowRecipe={setShowRecipe}
-            setMeal={setMeal}
+            setSelectedMeal={setSelectedMeal}
           />
         </div>
       </div>
@@ -142,7 +162,11 @@ function MealCard({ meals, date, setShowMealCard, setShowRecipe, setMeal }) {
           }}
         >
           <h2>Dinner</h2>
-          <BsArrowRepeat style={{ fontSize: "1.25rem", cursor: "pointer" }} />
+          <BsArrowRepeat
+            className={loadingMealType === "dinner" ? "spin" : ""}
+            style={{ fontSize: "1.25rem", cursor: "pointer" }}
+            onClick={() => handleSingleMeal("dinner")}
+          />
         </div>{" "}
         <p className="meal-card__section-calories">
           {meals[2].calories} calories
@@ -152,7 +176,7 @@ function MealCard({ meals, date, setShowMealCard, setShowRecipe, setMeal }) {
             meal={meals[2]}
             setShowMealCard={setShowMealCard}
             setShowRecipe={setShowRecipe}
-            setMeal={setMeal}
+            setSelectedMeal={setSelectedMeal}
           />
         </div>
       </div>
