@@ -21,7 +21,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-client = genai.Client(api_key="AIzaSyBzRdsuxmweKGmWcQjTQu9DpSeJVZCLMS0")
+google_api_key = ""
+
+client = genai.Client(api_key=google_api_key)
 
 format = ''
 while format != 'api' and format != 'df':
